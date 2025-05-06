@@ -1,25 +1,31 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: my-postgres
-  namespace: argocd
+  name: postgres-bitnami
+  namespace: argocd # replace with your Argo CD namespace if different
 spec:
   project: default
   source:
-    # The URL of the Helm repository
     repoURL: https://charts.bitnami.com/bitnami
-    # The name of the Helm Chart
     chart: postgresql
-    # The version of the Helm Chart
-    targetRevision: "15.5.38"
+    targetRevision: 15.5.38
     helm:
-      # Define the release name (defaults to the name of the ArgoCD application)
-      releaseName: my-postgres-database
-      # Helm values as block file
       values: |
         auth:
-          username: my-user
-          password: my-password
+          postgresPassword: mysecurepassword
+          username: myuser
+          password: myuserpassword
+          database: mydatabase
+        primary:
+          persistence:
+            enabled: true
+            size: 8Gi
   destination:
     server: https://kubernetes.default.svc
     namespace: postgres
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
