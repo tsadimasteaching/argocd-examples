@@ -2,6 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: my-postgres
+  namespace: argocd
 spec:
   project: default
   source:
@@ -21,4 +22,4 @@ spec:
           password: my-password
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: postgres
