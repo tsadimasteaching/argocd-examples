@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: nginx-container
-        image: nginx:bookworm-otel
+        image: nginx:latest
         ports:
         - containerPort: 80
