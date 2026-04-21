@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: podinfo-demo
+  # Argo CD usually runs in the 'argocd' namespace
+  namespace: argocd 
+spec:
+  project: default
+  source:
+    # The URL of the official Podinfo Helm repository
+    repoURL: 'https://stefanprodan.github.io/podinfo'
+    chart: podinfo
+    # Pinning to a specific version range
+    targetRevision: 6.11.2 
+    # Overriding the default Helm values
+    helm:
+      values: |
+        replicaCount: 2
+        ui:
+          color: "#34577c"
+          message: "Hello from Argo CD!"
+  destination:
+    # Deploys to the local cluster where Argo CD is running
+    server: 'https://kubernetes.default.svc' 
+    namespace: podinfo-demo
+  syncPolicy:
+    # Automatically apply changes and prevent configuration drift
+    automated: 
+      prune: true
+      selfHeal: true
+    syncOptions:
+      # Automatically create the destination namespace
+      - CreateNamespace=true
