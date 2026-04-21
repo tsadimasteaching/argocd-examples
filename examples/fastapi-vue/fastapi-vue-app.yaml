@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fastapi-vue
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/tsadimasteaching/cloud-platforms-fastapi-vue.git'
+    targetRevision: HEAD
+    # Argo CD auto-detects Kustomize when kustomization.yaml is present in the path.
+    # It will run `kustomize build` and apply the resulting manifests.
+    path: k8s
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: fastapi-vue
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
