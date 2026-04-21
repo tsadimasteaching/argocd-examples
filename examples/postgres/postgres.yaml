@@ -1,25 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: postgres-bitnami
-  namespace: argocd # replace with your Argo CD namespace if different
+  name: postgres
+  namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: registry-1.docker.io/bitnamicharts
-    chart: postgresql
-    targetRevision: 15.5.38
-    helm:
-      values: |
-        auth:
-          postgresPassword: mysecurepassword
-          username: myuser
-          password: myuserpassword
-          database: mydatabase
-        primary:
-          persistence:
-            enabled: true
-            size: 8Gi
+  sources:
+    - repoURL: https://cloudnative-pg.github.io/charts
+      chart: cloudnative-pg
+      targetRevision: 0.23.0
+    - repoURL: https://github.com/tsadimasteaching  # replace with your repo
+      path: ./argocd-examples/postgres/
+      targetRevision: HEAD
   destination:
     server: https://kubernetes.default.svc
     namespace: postgres
@@ -29,3 +21,10 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
